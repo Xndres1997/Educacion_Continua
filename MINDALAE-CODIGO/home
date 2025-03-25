@@ -1,0 +1,101 @@
+import 'package:flutter/material.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.green[800],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Título
+              Text(
+                'MINDALAE\nRADIO TV',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.yellow,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Spacer(flex: 1),
+
+              // TV LIVE Card
+              _buildMediaCard(
+                icon: Icons.tv,
+                title: 'TV LIVE',
+                onTap: () => Navigator.pushNamed(context, '/tv'),
+              ),
+
+              SizedBox(height: 20),
+
+              // RADIO Card
+              _buildMediaCard(
+                icon: Icons.radio,
+                title: 'RADIO',
+                onTap: () => Navigator.pushNamed(context, '/radio'),
+              ),
+
+              Spacer(flex: 2),
+
+              // Botón PROGRAMAS
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/programas'),
+                icon: Icon(Icons.list, color: Colors.green[900]),
+                label: Text(
+                  'PROGRAMAS',
+                  style: TextStyle(color: Colors.green[900]),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow,
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMediaCard({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.green[700],
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(icon, color: Colors.white, size: 40),
+            Text(
+              title,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+              ),
+            ),
+            Icon(Icons.play_circle, color: Colors.yellow, size: 40),
+          ],
+        ),
+      ),
+    );
+  }
+}
