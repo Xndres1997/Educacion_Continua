@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mindalae/connection_service.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -12,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final ConnectionService _connectionService = ConnectionService();
 
   void _login() {
     final String username = _usernameController.text;
@@ -24,9 +28,41 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _loginWithGoogle() {
-    print('Ingresar con Google');
-    // Aquí puedes integrar Firebase o cualquier otro método de login con Google
+  void _loginWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        // El usuario canceló el inicio de sesión
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      // Si el login fue exitoso, mostramos algo o redirigimos
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Bienvenido, ${userCredential.user?.displayName ?? "usuario"}',
+          ),
+        ),
+      );
+      await _connectionService.registrarConexion();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al iniciar sesión con Google: $e')),
+      );
+    }
   }
 
   @override
@@ -50,9 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
             fontSize: 24,
           ),
         ),
-        backgroundColor: const Color.fromRGBO(157, 157, 156, 1),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
-      backgroundColor: const Color.fromRGBO(157, 157, 156, 1),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: SingleChildScrollView(
@@ -100,8 +136,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: const Text(
                     'INGRESAR',
                     style: TextStyle(
-                      color: Colors.black, // 👈 Color de la fuente
-                      fontWeight: FontWeight.bold, // opcional
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -125,8 +161,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: const Text(
                     'Ingresar con Google',
                     style: TextStyle(
-                      color: Colors.black, // 👈 Color de la fuente
-                      fontWeight: FontWeight.bold, // opcional
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(

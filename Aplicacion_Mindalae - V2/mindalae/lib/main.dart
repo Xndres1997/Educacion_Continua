@@ -9,8 +9,12 @@ import 'dart:async';
 import 'pages/login.dart';
 import 'widgets/menu_lateral.dart';
 import 'pages/programas/programas_export.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MainApp());
 }
 
@@ -217,7 +221,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
           onItemSelected: _onIconPressed,
           onToggleTheme: widget.onToggleTheme,
         ), // ← aquí está el Drawer
-        backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         body: _pages[_selectedIndex],
         bottomNavigationBar: BarraInferior(
           selectedIndex: _selectedIndex,
@@ -232,15 +236,15 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
   Color _getBottomNavColor() {
     switch (_selectedIndex) {
       case 0:
-        return const Color.fromRGBO(157, 157, 156, 1); // Color para Radio
+        return const Color.fromARGB(255, 0, 0, 0); // Color para Radio
       case 1:
-        return const Color.fromRGBO(157, 157, 156, 1); // Color para TV
+        return const Color.fromARGB(255, 0, 0, 0); // Color para TV
       case 2:
-        return const Color.fromRGBO(157, 157, 156, 1); // Color para Programas
+        return const Color.fromARGB(255, 0, 0, 0); // Color para Programas
       case 3:
-        return const Color.fromRGBO(157, 157, 156, 1); // Color para Login
+        return const Color.fromARGB(255, 0, 0, 0); // Color para Login
       default:
-        return Colors.grey; // Color por defecto
+        return const Color.fromARGB(255, 0, 0, 0); // Color por defecto
     }
   }
 }
@@ -302,7 +306,7 @@ class _RadioPlayerScreenContentState extends State<RadioPlayerScreenContent>
       _animationController.stop();
     } else {
       await _audioPlayer.play(
-        UrlSource('https://streamingecuador.com:9280/stream'),
+        UrlSource('https://grupomundodigital.com:8646/stream'),
       );
       _animationController.repeat(reverse: true);
     }
@@ -330,42 +334,59 @@ class _RadioPlayerScreenContentState extends State<RadioPlayerScreenContent>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
           'MINDALAE',
           style: TextStyle(
-            color: Color.fromRGBO(0, 0, 0, 1),
+            color: Color.fromRGBO(255, 255, 255, 1),
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         leading: IconButton(
           icon: const Icon(
-            Icons.menu_rounded,
-            color: Color.fromRGBO(255, 206, 0, 1),
+            Icons.menu,
             size: 35,
+            color: Color.fromRGBO(255, 206, 0, 1),
           ),
           onPressed: () => Scaffold.of(context).openDrawer(),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.person_add_alt_1_rounded,
-              color: Color.fromRGBO(255, 206, 0, 1),
-              size: 35,
-            ),
-            onPressed: widget.onLoginPressed,
+          StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(); // Loader opcional
+              }
+
+              if (snapshot.hasData) {
+                return const SizedBox.shrink(); // Oculta el botón si está logueado
+              }
+
+              return IconButton(
+                icon: const Icon(
+                  Icons.person_add_alt_1_rounded,
+                  color: Color.fromRGBO(255, 206, 0, 1),
+                  size: 35,
+                ),
+                onPressed: widget.onLoginPressed,
+              );
+            },
           ),
         ],
         elevation: 0,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Si la orientación es horizontal, permitimos scroll siempre
+          final isHorizontal =
+              MediaQuery.of(context).orientation == Orientation.landscape;
+
+          final content = Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
               const Text(
@@ -439,9 +460,15 @@ class _RadioPlayerScreenContentState extends State<RadioPlayerScreenContent>
                 ),
                 onPressed: _togglePlay,
               ),
+              const SizedBox(height: 40),
             ],
-          ),
-        ],
+          );
+
+          // Si el contenido es más grande que la altura disponible o estamos en horizontal, usamos scroll
+          return (constraints.maxHeight < 700 || isHorizontal)
+              ? SingleChildScrollView(child: content)
+              : content;
+        },
       ),
     );
   }

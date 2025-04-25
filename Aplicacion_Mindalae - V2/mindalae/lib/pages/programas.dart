@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProgramasScreen extends StatefulWidget {
   final void Function(int index)? onItemSelected;
@@ -31,9 +33,49 @@ class _ProgramasScreenState extends State<ProgramasScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    cargarLikes(); // Llamás a tu función aquí
+  }
+
+  Future<void> cargarLikes() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final doc =
+        await FirebaseFirestore.instance
+            .collection('likes')
+            .doc(user.uid)
+            .get();
+
+    if (doc.exists) {
+      final data = doc.data();
+      if (data != null) {
+        setState(() {
+          for (int i = 0; i < _programNames.length; i++) {
+            final programName = _programNames[i];
+            _liked[i] = data[programName] == true;
+          }
+        });
+      }
+    }
+  }
+
+  // Función para guardar en Firestore
+  Future<void> guardarLike(String programaId, bool liked) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final docRef = FirebaseFirestore.instance.collection('likes').doc(user.uid);
+    await docRef.set({
+      programaId: liked.toString(), // Guardamos como "true"/"false"
+    }, SetOptions(merge: true)); // merge para mantener los demás programas
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -45,7 +87,7 @@ class _ProgramasScreenState extends State<ProgramasScreen> {
           ),
         ),
         elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -60,7 +102,7 @@ class _ProgramasScreenState extends State<ProgramasScreen> {
                     vertical: 5,
                     horizontal: 16,
                   ),
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: const Color.fromARGB(103, 255, 255, 255),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(60),
                   ),
@@ -161,18 +203,48 @@ class _ProgramasScreenState extends State<ProgramasScreen> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        _liked[index] ? Icons.favorite : Icons.favorite_border,
-                        color:
+                    StreamBuilder<User?>(
+                      stream: FirebaseAuth.instance.authStateChanges(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox(); // o CircularProgressIndicator si querés
+                        }
+
+                        if (!snapshot.hasData) {
+                          // No hay usuario autenticado → ocultamos el botón
+                          return const SizedBox.shrink();
+                        }
+
+                        // Usuario autenticado → mostramos el botón
+                        return IconButton(
+                          icon: Icon(
                             _liked[index]
-                                ? const Color.fromRGBO(255, 206, 0, 1)
-                                : const Color.fromARGB(255, 255, 254, 254),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _liked[index] = !_liked[index];
-                        });
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color:
+                                _liked[index]
+                                    ? const Color.fromRGBO(255, 206, 0, 1)
+                                    : const Color.fromARGB(255, 255, 254, 254),
+                          ),
+                          onPressed: () async {
+                            final user = FirebaseAuth.instance.currentUser;
+                            if (user == null) return;
+
+                            setState(() {
+                              _liked[index] = !_liked[index];
+                            });
+
+                            // Guardar en Firestore
+                            final programName = _programNames[index];
+                            await FirebaseFirestore.instance
+                                .collection('likes')
+                                .doc(user.uid)
+                                .set({
+                                  programName: _liked[index],
+                                }, SetOptions(merge: true));
+                          },
+                        );
                       },
                     ),
                   ],

@@ -52,7 +52,7 @@ class _CafeCognitivoState extends State<CafeCognitivo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(
@@ -71,7 +71,7 @@ class _CafeCognitivoState extends State<CafeCognitivo> {
             fontSize: 24,
           ),
         ),
-        backgroundColor: const Color.fromRGBO(157, 157, 156, 1),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
       body: SafeArea(
         child: Column(

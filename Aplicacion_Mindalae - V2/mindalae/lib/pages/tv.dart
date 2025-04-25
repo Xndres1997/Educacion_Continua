@@ -57,7 +57,7 @@ class _TvPlayerScreenState extends State<TvPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -69,7 +69,7 @@ class _TvPlayerScreenState extends State<TvPlayerScreen> {
           ),
         ),
         elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 157, 157, 156),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         //BOTON DE IR HACIA ATRAS NO FUNCIONA
         /*leading: IconButton(
           icon: const Icon(

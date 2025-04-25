@@ -51,8 +51,8 @@ class EqualizerPainter extends CustomPainter {
       // Colores para las barras
       Color color =
           HSVColor.lerp(
-            HSVColor.fromColor(const Color.fromRGBO(255, 152, 0, 1)),
-            HSVColor.fromColor(const Color.fromARGB(255, 0, 0, 0)),
+            HSVColor.fromColor(const Color.fromARGB(255, 9, 96, 5)),
+            HSVColor.fromColor(const Color.fromARGB(255, 251, 255, 0)),
             i / barCount,
           )!.toColor();
 
@@ -90,7 +90,7 @@ class EqualizerPainter extends CustomPainter {
           ) // Color de "neón"
           ..maskFilter = MaskFilter.blur(
             BlurStyle.normal,
-            5.0,
+            3.0,
           ), // Efecto de difuso/iluminado
       );
     }
