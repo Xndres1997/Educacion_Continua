@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "270256045012",
+    "firebase_url": "https://mindalae-radio-tv-default-rtdb.firebaseio.com",
+    "project_id": "mindalae-radio-tv",
+    "storage_bucket": "mindalae-radio-tv.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:270256045012:android:c7e608657268173f863441",
+        "android_client_info": {
+          "package_name": "com.example.mindalae"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "270256045012-5uofbtoveu2lm9jkj37j5hsd4js25usg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mindalae",
+            "certificate_hash": "7bae644f8ffe14dfce923aea67d9867b9dfb544e"
+          }
+        },
+        {
+          "client_id": "270256045012-46nh4lhmr37o0pnrqbvm23umria9ddph.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQXM_mzSh37lq3aJEjpPoA9fZICAgbtwQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "270256045012-46nh4lhmr37o0pnrqbvm23umria9ddph.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "270256045012-6f1v1m3e3bvfdon7ogg1rumkjr073e35.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.mindalae"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
